@@ -5,8 +5,8 @@ from aiogram import Bot, Dispatcher, types
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, WebAppInfo
 from waitress import serve
 
-API_TOKEN = '8178668402:AAHhnaR4idzlp1Nglg9FmsrIM8uci4OydW4'
-WEBAPP_URL = "https://appbot-production-c01e.up.railway.app"  # Railway-домен
+API_TOKEN = '8123278535:AAGq_e8tC9ZWjRoMjlIsbRcDri340OEL7Lw'
+WEBAPP_URL = "https://secondappbot-production.up.railway.app/"  # Railway-домен
 
 # === Flask-приложение ===
 flask_app = Flask(__name__, static_folder="web")
