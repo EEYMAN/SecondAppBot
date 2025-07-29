@@ -1,285 +1,297 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Signal Terminal</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    body, html {
-      font-family: 'Orbitron', sans-serif;
-      background: radial-gradient(circle at center, #0d0d0d 0%, #000000 100%);
-      color: #00ffe1;
-      height: 100vh;
-      overflow: hidden;
-    }
-    h1, h2, p, button {
-      text-shadow: 0 0 8px rgba(0, 255, 234, 0.6);
-    }
-    button {
-      font-family: inherit;
-    }
-    .login-screen, #app {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      padding: 20px;
-    }
-    .login-screen {
-      background: rgba(0, 0, 0, 0.9);
-    }
-    input[type="password"] {
-      padding: 12px;
-      font-size: 18px;
-      border-radius: 8px;
-      border: 2px solid #00ffe1;
-      background: rgba(0, 0, 0, 0.6);
-      color: #00ffe1;
-      outline: none;
-      margin-bottom: 16px;
-      width: 260px;
-    }
-    .btn {
-      padding: 14px 28px;
-      font-size: 16px;
-      background: linear-gradient(45deg, #00ffe1, #007f7f);
-      border: none;
-      border-radius: 12px;
-      color: #000;
-      font-weight: bold;
-      cursor: pointer;
-      box-shadow: 0 0 12px rgba(0, 255, 234, 0.6);
-      transition: transform 0.2s;
-    }
-    .btn:hover {
-      transform: scale(1.05);
-    }
-    .error {
-      color: #ff3c3c;
-      margin-bottom: 12px;
-    }
-    #app {
-      background: #0b0f10;
-      display: none;
-    }
-    .currency-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 12px;
-      max-width: 600px;
-      width: 100%;
-      margin-top: 30px;
-    }
-    .result-block {
-      margin-top: 30px;
-      font-size: 20px;
-      text-align: center;
-    }
-  .candle {
-  width: 10px;
-  position: relative;
-  border-radius: 2px;
-  transition: background 0.3s, box-shadow 0.3s;
+    <title>Signal + Terminal</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 280;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #2C3539;
+            color: white;
+            overflow: hidden;
+        }
+        .login-screen, #app {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .login-screen {
+        background-color: #000000;
+        }
+        #app {
+            display: none;
+             background-color: #2C3539;
+            text-align: center;
+            padding: 0 15px;
+            animation: fadeIn 1s ease-in;
+        }
+     h1, h2 {
+    margin: 10px 0;
+    text-shadow: 0 0 8px #9AA96A; /* тусклый берёзовый цвет */
+    color: white;
 }
- .arrow {
-      margin-top: 40px;
-      margin-bottom: 40px;
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-      align-items: flex-end;
-    }
-    .candle {
-  width: 10px;
-  background-color: currentColor;
-  box-shadow: 0 0 6px currentColor;
-  position: relative;
-}
-.candle:before,
-.candle:after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  width: 2px;
-  transform: translateX(-50%);
-  background-color: currentColor;
-}
-.candle:before {
-  top: -20px;
-  height: 20px;
-}
-.candle:after {
-  bottom: -20px;
-  height: 20px;
+h1 {
+    font-size: 36px;
 }
 
 
-    .signal-label {
-      margin-top: 10px;
-      font-size: 24px;
-      font-weight: bold;
-      text-shadow: 0 0 6px #00ffe1;
-    }
-    .signal-label.sell {
-      color: red;
-    }
-    .signal-label.buy {
-      color: #00ff00;
-    }
-    #timeSignal {
-      margin-top: 15px;
-      font-size: 18px;
-    }
-    #loadingOverlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.9);
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      color: #00ffe1;
-    }
-    .loader-bar {
-      width: 80%;
-      height: 20px;
-      border: 2px solid #00ffe1;
-      border-radius: 10px;
-      overflow: hidden;
-      margin-top: 20px;
-    }
-    .loader-fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(to right, #00ffe1, #007f7f);
-      transition: width 2s ease-in-out;
-    }
-    #langSelector {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      background: rgba(0, 255, 234, 0.1);
-      padding: 8px;
-      border-radius: 8px;
-      z-index: 2000;
-    }
-    #languageSelect {
-      background: transparent;
-      color: #00ffe1;
-      border: none;
-      font-weight: bold;
-      outline: none;
-    }
-  </style>
+        h2 {
+            font-size: 32px;
+        }
+        p {
+            font-size: 18px;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        input[type="password"] {
+            padding: 12px 15px;
+            font-size: 18px;
+            border-radius: 10px;
+            border: none;
+            max-width: 300px;
+            width: 100%;
+            margin-bottom: 20px;
+            outline: none;
+        }
+        .btn {
+            width: 280;
+            padding: 16px 32px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 14px;
+            border: none;
+            background: linear-gradient(to right, #2A4C60, #1C3543);
+            color: #F1EADC;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.3s ease;
+            user-select: none;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        .btn:hover {
+            background: linear-gradient(to right, #355F75, #24495b);
+            transform: scale(1.03);
+        }
+        .currency-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            max-width: 500px;
+            width: 100%;
+            margin-top: 20px;
+            box-sizing: border-box;
+        }
+        .result-block {
+            margin-top: 40px;
+            font-size: 22px;
+        }
+        .arrow {
+            font-size: 48px;
+            margin-top: 10px;
+            animation: pulse 1s infinite;
+        }
+        #langSelector {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            padding: 5px 10px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #fff;
+            z-index: 1100;
+        }
+        #loadingOverlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            color: #ffe600;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 80px;
+            font-weight: bold;
+            z-index: 1000;
+            user-select: none;
+            text-align: center;
+            animation: pulse 1.5s infinite;
+        }
+        #loadingText {
+            font-size: 32px;
+            margin-top: 20px;
+        }
+        .error {
+            color: #ff4040;
+            margin-bottom: 15px;
+            font-weight: bold;
+            text-shadow: 0 0 5px #ff2020;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.15); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @media (max-width: 768px) {
+            h1 { font-size: 28px; }
+            h2 { font-size: 24px; }
+            p { font-size: 16px; }
+            .btn { padding: 12px 24px; font-size: 16px; max-width: 100%; }
+            .currency-list { max-width: 100%; gap: 8px; }
+            .result-block { font-size: 18px; }
+            .arrow { font-size: 36px; }
+        }
+        @media (max-width: 400px) {
+            h1 { font-size: 22px; }
+            h2 { font-size: 20px; }
+            p { font-size: 14px; }
+            .btn { font-size: 14px; padding: 10px 20px; }
+            .arrow { font-size: 28px; }
+        }
+    </style>
 </head>
 <body>
+
+  <!-- Екран входу -->
   <div class="login-screen" id="loginScreen">
-    <h2 id="loginTitle">ВХІД ДО БОТА</h2>
+    <h2 id="loginTitle" data-lang="loginTitle">ВХІД ДО БОТА</h2>
     <input type="password" id="passwordInput" placeholder="Enter password" />
-    <div id="errorMessage" class="error" style="display:none;">Incorrect password</div>
-    <button class="btn" onclick="checkPassword()" id="loginBtn">Вхід</button>
+    <div id="errorMessage" class="error" style="display:none;" data-lang="wrongPassword">Incorrect password</div>
+    <button id="loginBtn" class="btn" onclick="checkPassword()" data-lang="loginButton">Вхід</button>
   </div>
 
- <div id="app">
-    <h1 id="title">Signal Terminal</h1>
+  <!-- Основний додаток -->
+  <div id="app">
+    <h1 id="title"> Signal Terminal </h1>
+    <p id="welcomeText">⬇️</p>
+    <button id="showCurrenciesBtn" class="btn">ВЫБРАТЬ АКТИВ</button>
     <div id="currencyList" class="currency-list" style="display: none;"></div>
     <div id="result" class="result-block" style="display: none;">
-      <div id="selectedText">Анализ: <strong id="selectedCurrency"></strong></div>
-      <div class="arrow" id="arrowSymbol"></div>
-      <div class="signal-label" id="signalLabel"></div>
-      <div id="timeSignal"></div>
-      <button id="chooseAgainBtn" class="btn" style="margin-top: 20px;">Выбрать другой актив</button>
+        <div id="selectedText">Анализ: <strong id="selectedCurrency"></strong></div>
+        <div class="arrow" id="arrowSymbol"></div>
+        <div id="timeSignal" style="margin-top: 10px; font-size: 20px; opacity: 0.85;"></div>
+        <button id="chooseAgainBtn" class="btn" style="margin-top: 30px;">Выбрать другой активу</button>
     </div>
   </div>
 
+  <!-- Локалізація -->
   <div id="langSelector">
-    <select id="languageSelect">
+    <select id="languageSelect" aria-label="Select language">
       <option value="ru">Русский</option>
       <option value="en">English</option>
       <option value="uk">Українська</option>
     </select>
   </div>
 
-  <div id="loadingOverlay">
-    <div style="font-size: 24px;">Загрузка...</div>
-    <div class="loader-bar">
-      <div class="loader-fill" id="loaderFill"></div>
-    </div>
+  <!-- Завантаження -->
+  <div id="loadingOverlay" style="display: none;">
+    ⏳
+    <div id="loadingText">Анализую ситуацию...</div>
   </div>
 
   <script>
-    const currencyPairs = [
-      'AED/CNY (OTC)', 'BHD/CHY (OTC)', 'CHF/JPY (OTC)', 'CAD/JPY (OTC)', 'EUR/USD (OTC)',
-      'EUR/JPY (OTC)', 'GBP/USD (OTC)', 'GBP/AUD (OTC)', 'NZD/JPY (OTC)', 'NZD/USD (OTC)'
-    ];
-
     const localization = {
       ru: {
-        loginTitle: "ВХОД К БОТУ", loginButton: "Вход", wrongPassword: "Неверный пароль",
-        title: "Signal Terminal", showCurrenciesBtn: "ВЫБРАТЬ АКТИВ", selectedText: "Анализ:",
-        chooseAgainBtn: "Выбрать другой актив", loadingText: "Загрузка...", signalTime: "Время на: {time} секунд"
+        loginTitle: "ВХОД К БОТУ",
+        loginButton: "Вход",
+        wrongPassword: "Неверный пароль",
+        intro: "Signal - Terminal",
+        title: "Signal - Terminal",
+      
+        showCurrenciesBtn: "ВЫБРАТЬ АКТИВ",
+        selectedText: "Анализ:",
+        chooseAgainBtn: "Выбрать другой актив",
+        loadingText: "Анализирую...",
+        signalTime: "Время на: {time} секунд"
       },
       en: {
-        loginTitle: "LOGIN BOT", loginButton: "Enter", wrongPassword: "Incorrect password",
-        title: "Signal Terminal", showCurrenciesBtn: "CHOOSE ASSET", selectedText: "Analysis:",
-        chooseAgainBtn: "Get another", loadingText: "Loading...", signalTime: "Time for: {time} seconds"
+        loginTitle: "LOGIN BOT",
+        loginButton: "Enter",
+        wrongPassword: "Incorrect password",
+        intro: "Signal - Terminal",
+        title: "Signal - Terminal",
+       
+        showCurrenciesBtn: "CHOICE ACTIVE",
+        selectedText: "Signal for currency pair:",
+        chooseAgainBtn: "Get another analysis",
+        loadingText: "Getting analysis.",
+        signalTime: "Time for: {time} seconds"
       },
       uk: {
-        loginTitle: "ВХІД ДО БОТА", loginButton: "Вхід", wrongPassword: "Невірний пароль",
-        title: "Signal Terminal", showCurrenciesBtn: "ВИБРАТИ АКТИВ", selectedText: "Аналіз:",
-        chooseAgainBtn: "Інший актив", loadingText: "Завантаження...", signalTime: "Час на: {time} секунд"
+        loginTitle: "ВХІД ДО БОТА",
+        loginButton: "Вхід",
+        wrongPassword: "Невірний пароль",
+        intro: "Signal - Terminal",
+        title: "Signal - Terminal",
+    
+        showCurrenciesBtn: "ВИБРАТИ АКТИВ",
+        selectedText: "Аналіз:",
+        chooseAgainBtn: "Вибрати інший актив",
+        loadingText: "Аналізую...",
+        signalTime: "Час на: {time} секунд"
       }
     };
 
-    let currentLang = 'ru';
-
-    const loginScreen = document.getElementById('loginScreen');
-    const passwordInput = document.getElementById('passwordInput');
-    const errorMessage = document.getElementById('errorMessage');
-    const loginTitle = document.getElementById('loginTitle');
-    const loginBtn = document.getElementById('loginBtn');
+    const introEl = document.getElementById('intro');
     const appEl = document.getElementById('app');
+    const titleEl = document.getElementById('title');
+    const welcomeTextEl = document.getElementById('welcomeText');
+    const showCurrenciesBtn = document.getElementById('showCurrenciesBtn');
     const currencyList = document.getElementById('currencyList');
     const resultBlock = document.getElementById('result');
     const selectedTextEl = document.getElementById('selectedText');
     const selectedCurrencyEl = document.getElementById('selectedCurrency');
     const chooseAgainBtn = document.getElementById('chooseAgainBtn');
     const loadingOverlay = document.getElementById('loadingOverlay');
-    const loaderFill = document.getElementById('loaderFill');
+    const loadingTextEl = document.getElementById('loadingText');
     const arrowSymbol = document.getElementById('arrowSymbol');
-    const signalLabel = document.getElementById('signalLabel');
     const languageSelect = document.getElementById('languageSelect');
-    const titleEl = document.getElementById('title');
-    const timeSignal = document.getElementById('timeSignal');
+
+    const loginScreen = document.getElementById('loginScreen');
+    const passwordInput = document.getElementById('passwordInput');
+    const errorMessage = document.getElementById('errorMessage');
+    const loginTitle = document.getElementById('loginTitle');
+    const loginBtn = document.getElementById('loginBtn');
+
+    const currencyPairs = [
+      'AED/CNY (OTC)', 'BHD/CHY (OTC)', 'CHF/JPY (OTC)', 'CAD/JPY (OTC)', 'EUR/USD (OTC)',
+      'EUR/JPY (OTC)', 'GBP/USD (OTC)', 'GBP/AUD (OTC)', 'NZD/JPY (OTC)', 'NZD/USD (OTC)'
+    ];
+
+    let currentLang = 'ru';
 
     function updateLocalization(lang) {
       currentLang = lang;
-      const loc = localization[lang];
-      loginTitle.textContent = loc.loginTitle;
-      loginBtn.textContent = loc.loginButton;
-      errorMessage.textContent = loc.wrongPassword;
-      titleEl.textContent = loc.title;
-      chooseAgainBtn.textContent = loc.chooseAgainBtn;
-      selectedTextEl.firstChild.textContent = loc.selectedText + ' ';
-    }
 
-    function checkPassword() {
-      if (passwordInput.value === "121212") {
-        loginScreen.style.display = 'none';
-        appEl.style.display = 'flex';
-        populateCurrencyList();
-      } else {
-        errorMessage.style.display = 'block';
-      }
+      // Вхід
+      loginTitle.textContent = localization[lang].loginTitle;
+      loginBtn.textContent = localization[lang].loginButton;
+      errorMessage.textContent = localization[lang].wrongPassword;
+
+      // Основний інтерфейс
+      if(introEl) introEl.textContent = localization[lang].intro;
+      titleEl.textContent = localization[lang].title;
+      welcomeTextEl.textContent = localization[lang].welcomeText;
+      showCurrenciesBtn.textContent = localization[lang].showCurrenciesBtn;
+      chooseAgainBtn.textContent = localization[lang].chooseAgainBtn;
+      loadingTextEl.textContent = localization[lang].loadingText;
+      selectedTextEl.firstChild.textContent = localization[lang].selectedText + ' ';
     }
 
     function populateCurrencyList() {
@@ -288,48 +300,66 @@
         const btn = document.createElement('button');
         btn.className = 'btn';
         btn.textContent = pair;
-        btn.onclick = () => selectCurrency(pair);
+        btn.addEventListener('click', () => {
+          selectCurrency(pair);
+        });
         currencyList.appendChild(btn);
       });
-      currencyList.style.display = 'grid';
     }
 
-   function selectCurrency(pair) {
-  currencyList.style.display = 'none';
-  loaderFill.style.width = '0%';
-  loadingOverlay.style.display = 'flex';
-  setTimeout(() => loaderFill.style.width = '100%', 100);
-
-  setTimeout(() => {
-    loadingOverlay.style.display = 'none';
-    selectedCurrencyEl.textContent = pair;
-    const isUp = Math.random() >= 0.5;
-
-    const candleHeights = isUp ? [10, 25, 40] : [40, 25, 10];
-    const color = isUp ? '#00ff00' : 'red';  // цвет свечей
-
-    arrowSymbol.innerHTML = candleHeights
-      .map(h => `<div class="candle" style="height: ${h}px; color: ${color};"></div>`)
-      .join('');
-
-    signalLabel.textContent = isUp ? 'BUY' : 'SELL';
-    signalLabel.className = `signal-label ${isUp ? 'buy' : 'sell'}`;
-
-    const possibleTimes = [30, 60];
-    const time = possibleTimes[Math.floor(Math.random() * possibleTimes.length)];
-    timeSignal.textContent = localization[currentLang].signalTime.replace('{time}', time);
-    resultBlock.style.display = 'block';
-  }, 2200);
+   function showCurrencyList() {
+  currencyList.style.display = 'grid';  // <-- тут було flex, тепер grid
+  showCurrenciesBtn.style.display = 'none';
+  resultBlock.style.display = 'none';
 }
 
-   chooseAgainBtn.onclick = () => {
+
+    function selectCurrency(pair) {
+      currencyList.style.display = 'none';
+      loadingOverlay.style.display = 'flex';
       resultBlock.style.display = 'none';
-      currencyList.style.display = 'grid';
-    };
 
-    languageSelect.onchange = e => updateLocalization(e.target.value);
+      setTimeout(() => {
+        loadingOverlay.style.display = 'none';
+        selectedCurrencyEl.textContent = pair;
+        const arrow = Math.random() < 0.5 ? '⬆️' : '⬇️';
+        arrowSymbol.textContent = arrow;
 
+        const possibleTimes = [30, 60];
+        const randomTime = possibleTimes[Math.floor(Math.random() * possibleTimes.length)];
+
+        document.getElementById('timeSignal').textContent = localization[currentLang].signalTime.replace('{time}', randomTime);
+        resultBlock.style.display = 'block';
+      }, 2000);
+    }
+
+    function checkPassword() {
+      if (passwordInput.value === "121212") {
+        loginScreen.style.display = "none";
+        appEl.style.display = "flex";
+        showCurrencyList();
+        errorMessage.style.display = "none";
+      } else {
+        errorMessage.style.display = "block";
+      }
+    }
+
+    chooseAgainBtn.addEventListener('click', () => {
+      resultBlock.style.display = 'none';
+      showCurrenciesBtn.style.display = 'block';
+      currencyList.style.display = 'none';
+    });
+
+    showCurrenciesBtn.addEventListener('click', showCurrencyList);
+
+    languageSelect.addEventListener('change', (e) => {
+      updateLocalization(e.target.value);
+    });
+
+    // Ініціалізація
     updateLocalization(currentLang);
+    populateCurrencyList();
+
   </script>
 </body>
-</html>
+</html> 
