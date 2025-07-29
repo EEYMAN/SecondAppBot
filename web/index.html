@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Signal Terminal</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body, html {
+      font-family: 'Orbitron', sans-serif;
+      background: radial-gradient(circle at center, #0d0d0d 0%, #000000 100%);
+      color: #00ffe1;
+      height: 100vh;
+      overflow: hidden;
+    }
+    h1, h2, p, button {
+      text-shadow: 0 0 8px rgba(0, 255, 234, 0.6);
+    }
+    button {
+      font-family: inherit;
+    }
+    .login-screen, #app {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      padding: 20px;
+    }
+    .login-screen {
+      background: rgba(0, 0, 0, 0.9);
+    }
+    input[type="password"] {
+      padding: 12px;
+      font-size: 18px;
+      border-radius: 8px;
+      border: 2px solid #00ffe1;
+      background: rgba(0, 0, 0, 0.6);
+      color: #00ffe1;
+      outline: none;
+      margin-bottom: 16px;
+      width: 260px;
+    }
+    .btn {
+      padding: 14px 28px;
+      font-size: 16px;
+      background: linear-gradient(45deg, #00ffe1, #007f7f);
+      border: none;
+      border-radius: 12px;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 0 12px rgba(0, 255, 234, 0.6);
+      transition: transform 0.2s;
+    }
+    .btn:hover {
+      transform: scale(1.05);
+    }
+    .error {
+      color: #ff3c3c;
+      margin-bottom: 12px;
+    }
+    #app {
+      background: #0b0f10;
+      display: none;
+    }
+    .currency-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      max-width: 600px;
+      width: 100%;
+      margin-top: 30px;
+    }
+    .result-block {
+      margin-top: 30px;
+      font-size: 20px;
+      text-align: center;
+    }
+  .candle {
+  width: 10px;
+  position: relative;
+  border-radius: 2px;
+  transition: background 0.3s, box-shadow 0.3s;
+}
+ .arrow {
+      margin-top: 40px;
+      margin-bottom: 40px;
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      align-items: flex-end;
+    }
+    .candle {
+  width: 10px;
+  background-color: currentColor;
+  box-shadow: 0 0 6px currentColor;
+  position: relative;
+}
+.candle:before,
+.candle:after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  width: 2px;
+  transform: translateX(-50%);
+  background-color: currentColor;
+}
+.candle:before {
+  top: -20px;
+  height: 20px;
+}
+.candle:after {
+  bottom: -20px;
+  height: 20px;
+}
+
+
+    .signal-label {
+      margin-top: 10px;
+      font-size: 24px;
+      font-weight: bold;
+      text-shadow: 0 0 6px #00ffe1;
+    }
+    .signal-label.sell {
+      color: red;
+    }
+    .signal-label.buy {
+      color: #00ff00;
+    }
+    #timeSignal {
+      margin-top: 15px;
+      font-size: 18px;
+    }
+    #loadingOverlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.9);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      color: #00ffe1;
+    }
+    .loader-bar {
+      width: 80%;
+      height: 20px;
+      border: 2px solid #00ffe1;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 20px;
+    }
+    .loader-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(to right, #00ffe1, #007f7f);
+      transition: width 2s ease-in-out;
+    }
+    #langSelector {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: rgba(0, 255, 234, 0.1);
+      padding: 8px;
+      border-radius: 8px;
+      z-index: 2000;
+    }
+    #languageSelect {
+      background: transparent;
+      color: #00ffe1;
+      border: none;
+      font-weight: bold;
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-screen" id="loginScreen">
+    <h2 id="loginTitle">ВХІД ДО БОТА</h2>
+    <input type="password" id="passwordInput" placeholder="Enter password" />
+    <div id="errorMessage" class="error" style="display:none;">Incorrect password</div>
+    <button class="btn" onclick="checkPassword()" id="loginBtn">Вхід</button>
+  </div>
+
+ <div id="app">
+    <h1 id="title">Signal Terminal</h1>
+    <div id="currencyList" class="currency-list" style="display: none;"></div>
+    <div id="result" class="result-block" style="display: none;">
+      <div id="selectedText">Анализ: <strong id="selectedCurrency"></strong></div>
+      <div class="arrow" id="arrowSymbol"></div>
+      <div class="signal-label" id="signalLabel"></div>
+      <div id="timeSignal"></div>
+      <button id="chooseAgainBtn" class="btn" style="margin-top: 20px;">Выбрать другой актив</button>
+    </div>
+  </div>
+
+  <div id="langSelector">
+    <select id="languageSelect">
+      <option value="ru">Русский</option>
+      <option value="en">English</option>
+      <option value="uk">Українська</option>
+    </select>
+  </div>
+
+  <div id="loadingOverlay">
+    <div style="font-size: 24px;">Загрузка...</div>
+    <div class="loader-bar">
+      <div class="loader-fill" id="loaderFill"></div>
+    </div>
+  </div>
+
+  <script>
+    const currencyPairs = [
+      'AED/CNY (OTC)', 'BHD/CHY (OTC)', 'CHF/JPY (OTC)', 'CAD/JPY (OTC)', 'EUR/USD (OTC)',
+      'EUR/JPY (OTC)', 'GBP/USD (OTC)', 'GBP/AUD (OTC)', 'NZD/JPY (OTC)', 'NZD/USD (OTC)'
+    ];
+
+    const localization = {
+      ru: {
+        loginTitle: "ВХОД К БОТУ", loginButton: "Вход", wrongPassword: "Неверный пароль",
+        title: "Signal Terminal", showCurrenciesBtn: "ВЫБРАТЬ АКТИВ", selectedText: "Анализ:",
+        chooseAgainBtn: "Выбрать другой актив", loadingText: "Загрузка...", signalTime: "Время на: {time} секунд"
+      },
+      en: {
+        loginTitle: "LOGIN BOT", loginButton: "Enter", wrongPassword: "Incorrect password",
+        title: "Signal Terminal", showCurrenciesBtn: "CHOOSE ASSET", selectedText: "Analysis:",
+        chooseAgainBtn: "Get another", loadingText: "Loading...", signalTime: "Time for: {time} seconds"
+      },
+      uk: {
+        loginTitle: "ВХІД ДО БОТА", loginButton: "Вхід", wrongPassword: "Невірний пароль",
+        title: "Signal Terminal", showCurrenciesBtn: "ВИБРАТИ АКТИВ", selectedText: "Аналіз:",
+        chooseAgainBtn: "Інший актив", loadingText: "Завантаження...", signalTime: "Час на: {time} секунд"
+      }
+    };
+
+    let currentLang = 'ru';
+
+    const loginScreen = document.getElementById('loginScreen');
+    const passwordInput = document.getElementById('passwordInput');
+    const errorMessage = document.getElementById('errorMessage');
+    const loginTitle = document.getElementById('loginTitle');
+    const loginBtn = document.getElementById('loginBtn');
+    const appEl = document.getElementById('app');
+    const currencyList = document.getElementById('currencyList');
+    const resultBlock = document.getElementById('result');
+    const selectedTextEl = document.getElementById('selectedText');
+    const selectedCurrencyEl = document.getElementById('selectedCurrency');
+    const chooseAgainBtn = document.getElementById('chooseAgainBtn');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const loaderFill = document.getElementById('loaderFill');
+    const arrowSymbol = document.getElementById('arrowSymbol');
+    const signalLabel = document.getElementById('signalLabel');
+    const languageSelect = document.getElementById('languageSelect');
+    const titleEl = document.getElementById('title');
+    const timeSignal = document.getElementById('timeSignal');
+
+    function updateLocalization(lang) {
+      currentLang = lang;
+      const loc = localization[lang];
+      loginTitle.textContent = loc.loginTitle;
+      loginBtn.textContent = loc.loginButton;
+      errorMessage.textContent = loc.wrongPassword;
+      titleEl.textContent = loc.title;
+      chooseAgainBtn.textContent = loc.chooseAgainBtn;
+      selectedTextEl.firstChild.textContent = loc.selectedText + ' ';
+    }
+
+    function checkPassword() {
+      if (passwordInput.value === "121212") {
+        loginScreen.style.display = 'none';
+        appEl.style.display = 'flex';
+        populateCurrencyList();
+      } else {
+        errorMessage.style.display = 'block';
+      }
+    }
+
+    function populateCurrencyList() {
+      currencyList.innerHTML = '';
+      currencyPairs.forEach(pair => {
+        const btn = document.createElement('button');
+        btn.className = 'btn';
+        btn.textContent = pair;
+        btn.onclick = () => selectCurrency(pair);
+        currencyList.appendChild(btn);
+      });
+      currencyList.style.display = 'grid';
+    }
+
+   function selectCurrency(pair) {
+  currencyList.style.display = 'none';
+  loaderFill.style.width = '0%';
+  loadingOverlay.style.display = 'flex';
+  setTimeout(() => loaderFill.style.width = '100%', 100);
+
+  setTimeout(() => {
+    loadingOverlay.style.display = 'none';
+    selectedCurrencyEl.textContent = pair;
+    const isUp = Math.random() >= 0.5;
+
+    const candleHeights = isUp ? [10, 25, 40] : [40, 25, 10];
+    const color = isUp ? '#00ff00' : 'red';  // цвет свечей
+
+    arrowSymbol.innerHTML = candleHeights
+      .map(h => `<div class="candle" style="height: ${h}px; color: ${color};"></div>`)
+      .join('');
+
+    signalLabel.textContent = isUp ? 'BUY' : 'SELL';
+    signalLabel.className = `signal-label ${isUp ? 'buy' : 'sell'}`;
+
+    const possibleTimes = [30, 60];
+    const time = possibleTimes[Math.floor(Math.random() * possibleTimes.length)];
+    timeSignal.textContent = localization[currentLang].signalTime.replace('{time}', time);
+    resultBlock.style.display = 'block';
+  }, 2200);
+}
+
+   chooseAgainBtn.onclick = () => {
+      resultBlock.style.display = 'none';
+      currencyList.style.display = 'grid';
+    };
+
+    languageSelect.onchange = e => updateLocalization(e.target.value);
+
+    updateLocalization(currentLang);
+  </script>
+</body>
+</html>
